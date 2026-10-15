@@ -1,0 +1,84 @@
+import { useEffect, useLayoutEffect, useRef } from "react";
+
+const ITEM_HEIGHT = 44;
+
+// scroll wheel: scroll, click, or arrow keys
+function WheelPicker({ count, value, onChange, unit, label }) {
+    const scrollerRef = useRef(null);
+    const settleRef = useRef(0);
+    const mountedRef = useRef(false);
+
+    // on mount, jump to the value; after that, animate to any new value
+    useLayoutEffect(() => {
+        let scroller = scrollerRef.current;
+        if (!mountedRef.current) {
+            mountedRef.current = true;
+            scroller.scrollTop = value * ITEM_HEIGHT;
+        } else if (Math.round(scroller.scrollTop / ITEM_HEIGHT) !== value) {
+            scroller.scrollTo({ top: value * ITEM_HEIGHT, behavior: "smooth" });
+        }
+    }, [value]);
+
+    useEffect(() => () => clearTimeout(settleRef.current), []);
+
+    function handleScroll() {
+        clearTimeout(settleRef.current);
+        settleRef.current = setTimeout(() => {
+            let scroller = scrollerRef.current;
+            if (!scroller)
+                return;
+            let index = Math.min(count - 1, Math.max(0, Math.round(scroller.scrollTop / ITEM_HEIGHT)));
+            if (index !== value)
+                onChange(index);
+        }, 120);
+    }
+
+    function handleKeyDown(event) {
+        let moves = { ArrowUp: -1, ArrowDown: 1, PageUp: -5, PageDown: 5 };
+        if (event.key in moves) {
+            event.preventDefault();
+            onChange(Math.min(count - 1, Math.max(0, value + moves[event.key])));
+        } else if (event.key === "Home") {
+            event.preventDefault();
+            onChange(0);
+        } else if (event.key === "End") {
+            event.preventDefault();
+            onChange(count - 1);
+        }
+    }
+
+    // numbers on the wheel
+    let numbers = [...Array(count).keys()];
+
+    return (
+        <div className="wheel">
+            <div
+                ref={scrollerRef}
+                className="wheelScroller"
+                role="spinbutton"
+                tabIndex={0}
+                aria-label={label}
+                aria-valuemin={0}
+                aria-valuemax={count - 1}
+                aria-valuenow={value}
+                onScroll={handleScroll}
+                onKeyDown={handleKeyDown}
+            >
+                {numbers.map((number) => (
+                    <div
+                        key={number}
+                        className={`wheelItem${number === value ? " isSelected" : ""}`}
+                        onClick={() => onChange(number)}
+                    >
+                        {number}
+                    </div>
+                ))}
+            </div>
+            <span className="wheelUnit" aria-hidden="true">
+                {unit}
+            </span>
+        </div>
+    );
+}
+
+export default WheelPicker;

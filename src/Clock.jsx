@@ -1,23 +1,33 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+
+const timeFormat = new Intl.DateTimeFormat([], { hour: "numeric", minute: "2-digit", second: "2-digit" });
+const dateFormat = new Intl.DateTimeFormat([], { weekday: "long", month: "long", day: "numeric" });
 
 function Clock() {
-  const [time, setTime] = useState(new Date());
+    const [now, setNow] = useState(() => new Date());
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(new Date());
-    }, 1000);
+    useEffect(() => {
+        let timer = setInterval(() => setNow(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
 
-    return () => clearInterval(timer);
-  }, []);
+    let parts = timeFormat.formatToParts(now);
+    let period = parts.find((part) => part.type === "dayPeriod")?.value;
+    let digits = parts
+        .filter((part) => part.type !== "dayPeriod")
+        .map((part) => part.value)
+        .join("")
+        .trim();
 
-  return (
-    <div className="clock_container">
-      <div className="digi_clock">
-        <span>{time.toLocaleTimeString()}</span>
-      </div>
-    </div>
-  );
+    return (
+        <div className="clock">
+            <div className="clockTime">
+                <span className="clockDigits">{digits}</span>
+                {period && <span className="clockPeriod">{period}</span>}
+            </div>
+            <div className="clockDate">{dateFormat.format(now)}</div>
+        </div>
+    );
 }
 
 export default Clock;

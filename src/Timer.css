@@ -1,0 +1,306 @@
+.timer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 36px;
+}
+
+.timerRow {
+    display: flex;
+    align-items: center;
+    gap: 56px;
+}
+
+.timerStage {
+    width: 340px;
+    height: 320px;
+    display: grid;
+    place-items: center;
+}
+
+/* ---------- round buttons ---------- */
+
+.roundButton {
+    --buttonBackground: var(--fillButton);
+    --buttonText: var(--label);
+    width: 92px;
+    height: 92px;
+    border: none;
+    border-radius: 50%;
+    background: var(--buttonBackground);
+    color: var(--buttonText);
+    font: 500 17px var(--font);
+    cursor: pointer;
+    outline: 2px solid var(--buttonBackground);
+    outline-offset: 3px;
+    transition: filter 0.15s, transform 0.1s, opacity 0.15s;
+}
+.roundButton:hover:not(:disabled) {
+    filter: brightness(1.25);
+}
+.roundButton:active:not(:disabled) {
+    transform: scale(0.95);
+}
+.roundButton:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+.roundButton:focus-visible {
+    outline-color: var(--blue);
+}
+.roundButtonGreen {
+    --buttonBackground: var(--greenFill);
+    --buttonText: var(--green);
+}
+.roundButtonOrange {
+    --buttonBackground: var(--orangeFill);
+    --buttonText: var(--orange);
+}
+
+/* ---------- wheel picker ---------- */
+
+.picker {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.pickerHighlight {
+    position: absolute;
+    left: -8px;
+    right: -8px;
+    top: 50%;
+    height: 44px;
+    transform: translateY(-50%);
+    border-radius: 10px;
+    background: var(--fill);
+    pointer-events: none;
+}
+
+.wheel {
+    position: relative;
+    width: 112px;
+}
+
+.wheelScroller {
+    height: 220px; /* 5 rows of 44px */
+    padding-block: 88px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+    perspective: 600px;
+    mask-image: linear-gradient(transparent, #000 32%, #000 68%, transparent);
+    outline: none;
+    border-radius: 10px;
+}
+.wheelScroller::-webkit-scrollbar {
+    display: none;
+}
+.wheelScroller:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--blue);
+}
+
+.wheelItem {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 62px;
+    font-family: var(--fontDisplay);
+    font-size: 24px;
+    font-variant-numeric: tabular-nums;
+    color: var(--label);
+    scroll-snap-align: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* curved drum look, in browsers that support scroll-driven animations */
+@supports (animation-timeline: view()) {
+    .wheelItem {
+        animation: wheelTilt linear both;
+        animation-timeline: view();
+    }
+}
+@keyframes wheelTilt {
+    0% {
+        transform: rotateX(-50deg);
+        opacity: 0.35;
+    }
+    50% {
+        transform: none;
+        opacity: 1;
+    }
+    100% {
+        transform: rotateX(50deg);
+        opacity: 0.35;
+    }
+}
+
+.wheelUnit {
+    position: absolute;
+    left: 58px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--label);
+    pointer-events: none;
+}
+
+/* ---------- countdown face ---------- */
+
+.face {
+    position: relative;
+    width: 300px;
+    height: 300px;
+}
+
+.ring {
+    display: block;
+}
+.ring circle {
+    fill: none;
+}
+.ringTrack {
+    stroke: var(--fill);
+}
+.ringProgress {
+    stroke: var(--orange);
+    stroke-linecap: round;
+}
+.isPaused .ringProgress {
+    stroke: var(--labelTertiary);
+}
+
+.faceCenter {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.faceDuration {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 17px;
+    color: var(--labelSecondary);
+}
+
+.faceTime {
+    font-family: var(--fontDisplay);
+    font-size: 76px;
+    font-weight: 200;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    font-variant-numeric: tabular-nums;
+}
+.faceTime.isLong {
+    font-size: 58px;
+}
+
+.faceEnds {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 17px;
+    color: var(--labelSecondary);
+}
+.isPaused .faceTime {
+    opacity: 0.6;
+}
+
+/* ---------- time up alert ---------- */
+
+.alertBackdrop {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: rgba(0, 0, 0, 0.35);
+    animation: fadeIn 0.2s ease-out;
+    z-index: 10;
+}
+
+.alert {
+    width: 280px;
+    padding: 22px 18px 16px;
+    border-radius: 14px;
+    background: var(--alertBackground);
+    backdrop-filter: blur(40px) saturate(180%);
+    box-shadow:
+        0 0 0 0.5px rgba(255, 255, 255, 0.12),
+        0 24px 60px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    animation: popIn 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+.alertIcon {
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 12px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--orange);
+    color: #fff;
+}
+.alertIcon svg {
+    width: 26px;
+    height: 26px;
+}
+
+.alert h2 {
+    margin: 0 0 4px;
+    font-size: 17px;
+    font-weight: 600;
+}
+.alert p {
+    margin: 0 0 18px;
+    font-size: 13px;
+    color: var(--labelSecondary);
+}
+
+.alertActions {
+    display: flex;
+    gap: 8px;
+}
+.alertButton {
+    flex: 1;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    background: var(--fillStrong);
+    color: var(--label);
+    font: 500 14px var(--font);
+    cursor: pointer;
+}
+.alertButtonPrimary {
+    background: var(--orange);
+    color: #fff;
+}
+.alertButton:hover {
+    filter: brightness(1.15);
+}
+.alertButton:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+}
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(1.08);
+    }
+}

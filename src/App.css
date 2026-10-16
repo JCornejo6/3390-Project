@@ -16,7 +16,10 @@
 
 .app::before {
     inset: -60px;
-    background: #000 url("./assets/csub.png") center / cover no-repeat;
+   background-image: var(--backgroundImage);
+   background-position: center;
+   background-size:cover;
+   background-repeat: no-repeat;
     filter: blur(40px) saturate(160%);
 }
 
@@ -42,6 +45,16 @@
 
 .panel[hidden] {
     display: none;
+}
+
+.backgroundLayer{
+    position: fixed;
+    inset: -50px;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+
+    z-index: -2 ;
 }
 
 /* ---------- tab bar ---------- */
@@ -121,11 +134,63 @@
 .clockPeriod {
     font-size: 40px;
     font-weight: 300;
-    color: var(--labelSecondary);
+    /*color: var(--labelSecondary);*/
 }
 
 .clockDate {
     margin-top: 14px;
     font-size: 22px;
-    color: var(--labelSecondary);
+    /*color: var(--labelSecondary);*/
+}
+
+/* ---------- settings ---------- */
+
+.settings {
+    width: 500px;
+}
+
+.settings h1 {
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+
+.settingRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 18px 20px;
+
+    background: var(--fill);
+    border-radius: 12px;
+
+    font-size: 17px;
+}
+/*adds blue outline wallpapers*/
+.backgroundGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 120px);
+    gap: 12px;
+}
+
+.backgroundOption {
+    width: 120px;
+    height: 75px;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    background: transparent;
+}
+
+.backgroundOption img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.backgroundOption.selected {
+    border-color: var(--blue);
 }

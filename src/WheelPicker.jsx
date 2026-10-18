@@ -3,7 +3,10 @@ import { useEffect, useLayoutEffect, useRef } from "react";
 const ITEM_HEIGHT = 44;
 
 // scroll wheel: scroll, click, or arrow keys
-function WheelPicker({ count, value, onChange, unit, label }) {
+function WheelPicker({ count, value, onChange, unit, label,items }) {
+    
+    let itemCount = items ? items.length : count;
+    
     const scrollerRef = useRef(null);
     const settleRef = useRef(0);
     const mountedRef = useRef(false);
@@ -27,7 +30,7 @@ function WheelPicker({ count, value, onChange, unit, label }) {
             let scroller = scrollerRef.current;
             if (!scroller)
                 return;
-            let index = Math.min(count - 1, Math.max(0, Math.round(scroller.scrollTop / ITEM_HEIGHT)));
+            let index = Math.min(itemCount - 1, Math.max(0, Math.round(scroller.scrollTop / ITEM_HEIGHT)));
             if (index !== value)
                 onChange(index);
         }, 120);
@@ -37,18 +40,18 @@ function WheelPicker({ count, value, onChange, unit, label }) {
         let moves = { ArrowUp: -1, ArrowDown: 1, PageUp: -5, PageDown: 5 };
         if (event.key in moves) {
             event.preventDefault();
-            onChange(Math.min(count - 1, Math.max(0, value + moves[event.key])));
+            onChange(Math.min(itemCount - 1, Math.max(0, value + moves[event.key])));
         } else if (event.key === "Home") {
             event.preventDefault();
             onChange(0);
         } else if (event.key === "End") {
             event.preventDefault();
-            onChange(count - 1);
+            onChange(itemCount - 1);
         }
     }
 
     // numbers on the wheel
-    let numbers = [...Array(count).keys()];
+    let numbers = items || [...Array(count).keys()];
 
     return (
         <div className="wheel">
@@ -59,18 +62,18 @@ function WheelPicker({ count, value, onChange, unit, label }) {
                 tabIndex={0}
                 aria-label={label}
                 aria-valuemin={0}
-                aria-valuemax={count - 1}
+                aria-valuemax={itemCount - 1}
                 aria-valuenow={value}
                 onScroll={handleScroll}
                 onKeyDown={handleKeyDown}
             >
-                {numbers.map((number) => (
+                {numbers.map((item, index) => (
                     <div
-                        key={number}
-                        className={`wheelItem${number === value ? " isSelected" : ""}`}
-                        onClick={() => onChange(number)}
+                        key={item}
+                        className={`wheelItem${index === value ? " isSelected" : ""}`}
+                        onClick={() => onChange(index)}
                     >
-                        {number}
+                        {item}
                     </div>
                 ))}
             </div>

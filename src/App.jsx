@@ -4,6 +4,7 @@ import TabBar from "./TabBar.jsx";
 import Timer from "./Timer.jsx";
 import "./App.css";
 import Settings from "./Settings.jsx";
+import Alarm from "./Alarm.jsx"
 
 import background1 from "./assets/csub.png";
 import background2 from "./assets/falling.jpg";
@@ -104,6 +105,7 @@ useEffect(() => {
 
     let tabs = [
         { value: "clock", label: "Clock" },
+         {value: "alarm", label: "Alarm"},
         { value: "timer", label: "Timer", badge: tab !== "timer" ? timerBadge : null },
         {value: "settings",label:"Settings"},
     ];
@@ -134,6 +136,15 @@ console.log("APP BACKGROUND COUNT:", backgrounds.length);*/
                     shadowColor={shadowColor}
                     />
                 </section>
+
+                <section
+                className="panel"
+                hidden={tab !== "alarm"}
+                >
+                    <Alarm />
+                </section>
+
+
                 <section className="panel" hidden={tab !== "timer"}>
                     <Timer
                         visible={tab === "timer"}

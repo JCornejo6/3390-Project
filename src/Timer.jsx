@@ -3,6 +3,7 @@ import ProgressRing from "./ProgressRing.jsx";
 import WheelPicker from "./WheelPicker.jsx";
 import { useTimer } from "./useTimer.js";
 import "./Timer.css";
+import { playAlarmSound, stopAlarmSound } from "./alarmSound.js";
 
 const DEFAULT_SETTINGS = { hours: 0, minutes: 5, seconds: 0 };
 
@@ -46,6 +47,7 @@ function BellIcon() {
     );
 }
 
+
 function Timer({ visible = true, onFinish, onRemainingChange }) {
     const [settings, setSettings] = useState(DEFAULT_SETTINGS);
     const { hours, minutes, seconds } = settings;
@@ -70,12 +72,25 @@ function Timer({ visible = true, onFinish, onRemainingChange }) {
     }
 
     function repeat() {
+        stopAlarmSound();
         startTimer(duration);
+    }
+
+    /*stop alarm */
+    function stopTimer(){
+       stopAlarmSound();
+       cancel();
     }
 
     useEffect(() => {
         onRemainingChange?.(isCounting ? display : null);
     }, [display, isCounting, onRemainingChange]);
+
+    useEffect(() => {
+    if (status === "done") {
+        playAlarmSound();
+    }
+    }, [status]);
 
     let endTime = "";
     if (endsAt)
@@ -98,7 +113,7 @@ function Timer({ visible = true, onFinish, onRemainingChange }) {
     return (
         <div className={status === "paused" ? "timer isPaused" : "timer"}>
             <div className="timerRow">
-                <button className="roundButton" disabled={status === "idle"} onClick={cancel}>
+                <button className="roundButton" disabled={status === "idle"} onClick={stopTimer}>
                     Cancel
                 </button>
 
@@ -184,7 +199,7 @@ function Timer({ visible = true, onFinish, onRemainingChange }) {
                             <button className="alertButton" onClick={repeat}>
                                 Repeat
                             </button>
-                            <button className="alertButton alertButtonPrimary" onClick={cancel} autoFocus>
+                            <button className="alertButton alertButtonPrimary" onClick={stopTimer} autoFocus>
                                 Stop
                             </button>
                         </div>

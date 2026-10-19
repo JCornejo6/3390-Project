@@ -19,6 +19,8 @@ import background10 from "./assets/twiy.jpg";
 import background11 from "./assets/spiderman.jpg";
 import background12 from "./assets/spdier.jpg";
 
+
+// Stores all backgrounds in array for Settings 
 const backgrounds = [
     background1,
     background2,
@@ -35,7 +37,10 @@ const backgrounds = [
 ];
 
 function App() {
+      // Keeps track of which tab/page is currently selected
     const [tab, setTab] = useState("clock");
+
+    // Stores the remaining timer time for the timer tab badge
     const [timerBadge, setTimerBadge] = useState(null);
 
     const [clockColor,setClockColor] = useState(()=>{
@@ -44,6 +49,8 @@ function App() {
     const [timeFormat, setTimeFormat] = useState(() => {
     return localStorage.getItem("timeFormat") || "12";
 });
+
+// Show seconds by default if nothing saved
     const [showSeconds, setShowSeconds] = useState(() => {
     const saved = localStorage.getItem("showSeconds");
 
@@ -57,6 +64,9 @@ function App() {
 /*console.log("APP showSeconds =", showSeconds);
 console.log("APP setter =", typeof setShowSeconds);*/
 
+
+    // Loads the saved background or uses background1 by default,
+    //  other settings load saved as well
 const [background, setBackground] = useState(() => {
     const savedIndex = localStorage.getItem("backgroundIndex");
 
@@ -77,6 +87,7 @@ const [shadowColor, setShadowColor] = useState(() => {
     return localStorage.getItem("shadowColor") || "#000000";
 });
 
+//save settings in local storage
 useEffect(() => {
     localStorage.setItem("clockColor", clockColor);
 }, [clockColor]);
@@ -103,6 +114,7 @@ useEffect(() => {
     localStorage.setItem("backgroundIndex", index);
 }, [background]);
 
+//navigation tabs
     let tabs = [
         { value: "clock", label: "Clock" },
          {value: "alarm", label: "Alarm"},

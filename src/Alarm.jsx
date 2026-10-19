@@ -3,6 +3,7 @@ import WheelPicker from "./WheelPicker.jsx";
 import "./Timer.css";
 import{ playAlarmSound,stopAlarmSound} from "./alarmSound.js";
 
+
 function BellIcon() {
     return (
         <svg
@@ -18,15 +19,17 @@ function BellIcon() {
 }
 
 function Alarm() {
-
+// time picker values
     const [hour, setHour] = useState(0);
     const [minute, setMinute] = useState(0);
     const [period,setPeriod] = useState(0);
     const hours = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+//keep track of alarm
     const [alarmSet, setAlarmSet] = useState(false);
     const [scheduledAlarm, setScheduledAlarm] = useState(null);
     const [ringing,setRinging]=useState(false);
 
+    //save alarm time
     function setAlarm() {
         setScheduledAlarm({
             hour: hours[hour],
@@ -37,12 +40,12 @@ function Alarm() {
         setAlarmSet(true);
     }
 
-
+//CANCEL/REMOVE
      function cancelAlarm(){
             setAlarmSet(false);
             setScheduledAlarm(null);
         }
-
+// Stops alarm and resets for 5 min later
      function snoozeAlarm() {
         stopAlarmSound();
         
@@ -71,7 +74,7 @@ function Alarm() {
     setRinging(false);
     setAlarmSet(true);
 }
-
+// checks every second if alarm time has been reached
         useEffect(()=> {
             if (!alarmSet || !scheduledAlarm){
                 return;
@@ -80,15 +83,15 @@ function Alarm() {
                 const now = new Date();
                 
                 let alarmHour = scheduledAlarm.hour;
-
+// convert pm alarm to 24 hr time
                 if(scheduledAlarm.period === 1 && alarmHour !==12){
                     alarmHour +=12;
                 }
-                
+                //12 am is hour 0
                 if (scheduledAlarm.period === 0 && alarmHour ===12){
                     alarmHour=0;
                 }
-
+// ring when alarm is reached
                 if( 
                     now.getHours() === alarmHour &&
                     now.getMinutes() === scheduledAlarm.minute
@@ -110,7 +113,7 @@ function Alarm() {
     
 
         <div className="timerRow">
-
+ {/* Shows the currently set alarm */}
             {alarmSet &&(
                 <p>Alarm set for {scheduledAlarm.hour}:
                 {String(scheduledAlarm.minute).padStart(2,"0")}
@@ -170,6 +173,8 @@ function Alarm() {
 
         </div>
 
+
+            {/* Alarm popup  when the alarm  ringing */}
     {ringing && scheduledAlarm && (
     <div className="alertBackdrop">
 
@@ -200,7 +205,7 @@ function Alarm() {
                     className="alertButton"
                     onClick={snoozeAlarm}
                 >
-                    Snooze
+                    Snooze +5
                 </button>
 
                 <button

@@ -1,11 +1,10 @@
-
+// Receives the current settings and their update functions from App.jsx
 
 function Settings({ clockColor, setClockColor,timeFormat,
     setTimeFormat, showSeconds,setShowSeconds,backgrounds,
     background,setBackground,backgroundBlur,setBackgroundBlur,
     shadowColor, setShadowColor}) {
-   console.log("shadowColor =", shadowColor);
-console.log("setShadowColor type =", typeof setShadowColor);
+  
        
         return(
         <div className = "settings">
@@ -91,6 +90,8 @@ console.log("setShadowColor type =", typeof setShadowColor);
                         setBackgroundBlur(Number(event.target.value))
                     }
                     />
+
+                    {/* Show current blur amount */}
                     <span>{backgroundBlur}px</span>
                 </div>
             

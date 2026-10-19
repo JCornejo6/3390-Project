@@ -10,16 +10,20 @@ function WheelPicker({ count, value, onChange, unit, label,items }) {
     const scrollerRef = useRef(null);
     const settleRef = useRef(0);
     const mountedRef = useRef(false);
+    const targetRef = useRef(0); // where the wheel is headed
 
     // on mount, jump to the value; after that, animate to any new value
+    // compares against the target, not scrollTop, so fast key presses aren't lost mid-animation
     useLayoutEffect(() => {
         let scroller = scrollerRef.current;
+        let target = value * ITEM_HEIGHT;
         if (!mountedRef.current) {
             mountedRef.current = true;
-            scroller.scrollTop = value * ITEM_HEIGHT;
-        } else if (Math.round(scroller.scrollTop / ITEM_HEIGHT) !== value) {
-            scroller.scrollTo({ top: value * ITEM_HEIGHT, behavior: "smooth" });
+            scroller.scrollTop = target;
+        } else if (target !== targetRef.current) {
+            scroller.scrollTo({ top: target, behavior: "smooth" });
         }
+        targetRef.current = target;
     }, [value]);
 
     useEffect(() => () => clearTimeout(settleRef.current), []);
@@ -31,6 +35,7 @@ function WheelPicker({ count, value, onChange, unit, label,items }) {
             if (!scroller)
                 return;
             let index = Math.min(itemCount - 1, Math.max(0, Math.round(scroller.scrollTop / ITEM_HEIGHT)));
+            targetRef.current = index * ITEM_HEIGHT;
             if (index !== value)
                 onChange(index);
         }, 120);

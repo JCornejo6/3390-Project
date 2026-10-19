@@ -6,6 +6,20 @@ import "./Timer.css";
 import { playAlarmSound, stopAlarmSound } from "./alarmSound.js";
 
 const DEFAULT_SETTINGS = { hours: 0, minutes: 5, seconds: 0 };
+const RECENT_KEY = "recentTimers";
+const RECENT_LIMIT = 5;
+
+// saved timer lengths in milliseconds, newest first
+function loadRecentTimers() {
+    try {
+        let saved = JSON.parse(localStorage.getItem(RECENT_KEY));
+        if (!Array.isArray(saved))
+            return [];
+        return saved.filter((length) => Number.isFinite(length) && length > 0).slice(0, RECENT_LIMIT);
+    } catch {
+        return [];
+    }
+}
 
 function pad(number) {
     return String(number).padStart(2, "0");
@@ -47,10 +61,19 @@ function BellIcon() {
     );
 }
 
+function CloseIcon() {
+    return (
+        <svg width="8" height="8" viewBox="0 0 8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
+            <path d="M1 1l6 6M7 1L1 7" />
+        </svg>
+    );
+}
 
 function Timer({ visible = true, onFinish, onRemainingChange }) {
     const [settings, setSettings] = useState(DEFAULT_SETTINGS);
     const { hours, minutes, seconds } = settings;
+
+    const [recentTimers, setRecentTimers] = useState(loadRecentTimers);
 
     const timer = useTimer({ onFinish });
     const { status, duration, remaining, endsAt } = timer;
@@ -63,8 +86,34 @@ function Timer({ visible = true, onFinish, onRemainingChange }) {
         setSettings((previousSettings) => ({ ...previousSettings, ...patch }));
     }
 
+    // move this length to the front, drop duplicates, keep the newest 5
+    function rememberTimer(milliseconds) {
+        setRecentTimers((previousTimers) => {
+            let otherTimers = previousTimers.filter((length) => length !== milliseconds);
+            return [milliseconds, ...otherTimers].slice(0, RECENT_LIMIT);
+        });
+    }
+
     function startTimer(milliseconds = pickedMilliseconds) {
+        if (milliseconds <= 0)
+            return;
+        rememberTimer(milliseconds);
         timer.start(milliseconds);
+    }
+
+    function removeRecent(milliseconds) {
+        setRecentTimers((previousTimers) => previousTimers.filter((length) => length !== milliseconds));
+    }
+
+    // set the wheels to a recent timer and start it
+    function startRecent(milliseconds) {
+        let totalSeconds = Math.round(milliseconds / 1000);
+        update({
+            hours: Math.floor(totalSeconds / 3600),
+            minutes: Math.floor((totalSeconds % 3600) / 60),
+            seconds: totalSeconds % 60,
+        });
+        startTimer(milliseconds);
     }
 
     function cancel() {
@@ -85,6 +134,14 @@ function Timer({ visible = true, onFinish, onRemainingChange }) {
     useEffect(() => {
         onRemainingChange?.(isCounting ? display : null);
     }, [display, isCounting, onRemainingChange]);
+
+    useEffect(() => {
+        try {
+            localStorage.setItem(RECENT_KEY, JSON.stringify(recentTimers));
+        } catch {
+            // storage unavailable, recent timers just won't be saved
+        }
+    }, [recentTimers]);
 
     useEffect(() => {
     if (status === "done") {
@@ -181,6 +238,27 @@ function Timer({ visible = true, onFinish, onRemainingChange }) {
                 </button>
             </div>
 
+            {status === "idle" && recentTimers.length > 0 && (
+                <div className="recentTimers">
+                    <div className="sectionTitle">Recent</div>
+                    <div className="recentRow">
+                        {recentTimers.map((length) => (
+                            <div key={length} className="recentItem">
+                                <button className="recentButton" onClick={() => startRecent(length)}>
+                                    {formatDuration(length)}
+                                </button>
+                                <button
+                                    className="recentRemove"
+                                    aria-label={`Remove ${formatDuration(length)}`}
+                                    onClick={() => removeRecent(length)}
+                                >
+                                    <CloseIcon />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {status === "done" && (
                 <div className="alertBackdrop">

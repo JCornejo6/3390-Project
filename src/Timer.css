@@ -216,6 +216,81 @@
     opacity: 0.6;
 }
 
+/* ---------- recent timers ---------- */
+
+.recentTimers {
+    width: 440px;
+}
+
+.sectionTitle {
+    margin: 0 0 10px 4px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+    color: var(--labelSecondary);
+}
+
+.recentRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.recentItem {
+    position: relative;
+}
+
+.recentButton {
+    padding: 7px 14px;
+    border: none;
+    border-radius: 999px;
+    background: var(--fill);
+    color: var(--label);
+    font: 500 14px var(--font);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.recentButton:hover {
+    background: var(--fillStrong);
+}
+.recentButton:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
+}
+
+/* x in the corner, shown on hover or keyboard focus */
+.recentRemove {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border: none;
+    border-radius: 50%;
+    background: rgba(99, 99, 102, 0.95);
+    color: var(--label);
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s, background 0.15s;
+}
+.recentItem:hover .recentRemove,
+.recentItem:focus-within .recentRemove {
+    opacity: 1;
+    pointer-events: auto;
+}
+.recentRemove:hover {
+    background: rgba(142, 142, 147, 0.95);
+}
+.recentRemove:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 1px;
+}
+
 /* ---------- time up alert ---------- */
 
 .alertBackdrop {
